@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>從水庫到水龍頭：現代淨水場實景工程導覽</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="top-nav">
+    <div class="nav-inner">
+      <div class="brand-group">
+        <div class="brand-badge">水</div>
+        <div>
+          <div class="brand-title">現代淨水場實景工程導覽</div>
+          <div class="brand-sub">Water Treatment Plant Visual Exhibit · Step 01 — 08</div>
+        </div>
+      </div>
+
+      <!-- Interactive Step Progress Bar -->
+      <nav class="step-progress-bar" id="stepProgressBar" aria-label="淨水處理步驟導覽"></nav>
+
+      <!-- Display Mode Switcher (方案二 滾動長卷 + 方案四 全覽卡片) -->
+      <div class="mode-switcher">
+        <button class="mode-btn active" id="modeScrollyBtn" type="button">
+          <span>📜 滾動敘事導覽</span>
+        </button>
+        <button class="mode-btn" id="modeGridBtn" type="button">
+          <span>🗂️ 全覽卡片牆</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-header">
+    <div class="hero-eyebrow">
+      <span>● 現場紀實攝影 × 深度工程圖鑑</span>
+    </div>
+    <h1 class="hero-title">一滴水從水庫到你家水龍頭，經歷了哪些工程關卡？</h1>
+    <p class="hero-desc">
+      水庫原水含有肉眼看不見的帶負電膠體、藻類、有機物與病原體。透過下方<strong>「滾動式實景長卷」</strong>或切換至<strong>「全覽卡片牆」</strong>，你可以直接檢視每一座水池的日常運轉實景、歲修排空後的蜂巢構造，並點擊任意步驟開啟深度工程規格燈箱。
+    </p>
+    <div class="hero-quick-guide">
+      <div class="guide-chip">🖱️ <strong>操作提示 1：</strong>向下滾動頁面，左側現場實景與水質數據會隨步驟自動切換</div>
+      <div class="guide-chip">➕ <strong>操作提示 2：</strong>將滑鼠移至照片上的發光標記 <code>+</code>，查看水下關鍵工程設備</div>
+      <div class="guide-chip">↔️ <strong>操作提示 3：</strong>點擊照片右上角「雙圖滑桿對比」，左右拖曳透視池底內部構造</div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       MODE 1: SCROLLYTELLING WORKSPACE (方案二 滾動長卷)
+       ========================================================= -->
+  <main class="scrolly-container" id="scrollyContainer">
+    <!-- Left Sticky Visual Stage -->
+    <aside class="sticky-stage">
+      <div class="stage-frame">
+        <!-- Top Overlay Bar inside Photo -->
+        <div class="stage-top-bar">
+          <div class="stage-badge-box">
+            <div class="stage-step-tag" id="stageStepTag">STEP 01 · 取水與導水工程</div>
+            <div class="stage-step-name" id="stageStepName">水庫分層取水與機械攔污柵</div>
+          </div>
+
+          <div class="stage-view-controls">
+            <button class="view-Switch-btn active" id="viewMainBtn" type="button">📷 運轉實景</button>
+            <button class="view-Switch-btn" id="viewDetailBtn" type="button">🔬 內部構造 / 特寫</button>
+            <button class="view-Switch-btn" id="viewSplitBtn" type="button">↔️ 雙圖滑桿對比</button>
+            <button class="view-Switch-btn" id="stageOpenModalBtn" type="button" style="border-left:1px solid rgba(255,255,255,0.2);color:#38bdf8;">🔍 深度燈箱</button>
+          </div>
+        </div>
+
+        <!-- Photo Viewport with Split Comparison & Hotspots -->
+        <div class="photo-viewport" id="photoViewport">
+          <img class="stage-img" id="stageMainImg" src="images/step1_main.png" alt="淨水場步驟實景" />
+
+          <!-- Detail / Maintenance Overlay Image for Split or Toggle -->
+          <div class="stage-img-detail-clip" id="stageDetailClip">
+            <img id="stageDetailImg" src="images/step1_detail.png" alt="淨水場細部構造" />
+          </div>
+
+          <!-- Draggable Split Divider -->
+          <div class="compare-divider" id="compareDivider" title="左右拖曳對比運轉實景與內部構造">
+            <div class="compare-handle">↔</div>
+          </div>
+
+          <!-- Interactive Engineering Hotspots Layer -->
+          <div class="hotspot-layer" id="hotspotLayer"></div>
+        </div>
+
+        <!-- Photo Caption & Water Sample Indicator -->
+        <div class="stage-caption-bar">
+          <div class="caption-text" id="stageCaptionText">
+            📷 現場運轉實景載入中...
+          </div>
+          <div class="water-sample-pill">
+            <span class="water-swatch" id="stageWaterSwatch"></span>
+            <span id="stageWaterLabel">水體外觀狀態</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time Water Quality Telemetry HUD -->
+      <div class="telemetry-hud">
+        <div class="hud-box">
+          <div class="hud-label">濁度指標 (Turbidity)</div>
+          <div class="hud-val" id="hudTurbidity">15 ~ 50 NTU</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-label">自由有效餘氯 (Free Cl₂)</div>
+          <div class="hud-val" id="hudChlorine">0.00 mg/L</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-label">電位 / 關鍵物理狀態</div>
+          <div class="hud-val" id="hudZeta">-22.5 mV</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-label">水力停留時間 / 濾速</div>
+          <div class="hud-val" id="hudHrt">0.5 ~ 3 小時</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Scrolling Narrative Cards Column -->
+    <section class="narrative-column" id="narrativeColumn"></section>
+  </main>
+
+  <!-- =========================================================
+       MODE 2: TIMELINE GRID VIEW (方案四 全覽卡片牆)
+       ========================================================= -->
+  <section class="grid-view-container" id="gridViewContainer">
+    <div style="margin-bottom:1.75rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <h2 style="font-size:1.65rem;font-weight:800;color:#fff;">淨水場 8 大核心程序全覽卡片牆</h2>
+        <p style="color:#94a3b8;font-size:0.92rem;">點擊任意程序卡片，即可開啟全螢幕「深度實景相簿與工程規格燈箱」</p>
+      </div>
+    </div>
+    <div class="timeline-grid" id="timelineGrid"></div>
+  </section>
+
+  <!-- =========================================================
+       EXTRA SECTION 1: ADVANCED WATER TREATMENT (高級淨水單元)
+       ========================================================= -->
+  <section class="extra-section">
+    <div class="section-card">
+      <div style="display:inline-block;font-size:0.75rem;font-weight:700;color:#2dd4bf;background:rgba(45,212,191,0.12);padding:0.25rem 0.7rem;border-radius:6px;margin-bottom:0.6rem;">
+        ADVANCED WATER TREATMENT · 高雄澄清湖 / 鳳山 / 金門等優養化與高硬度水源專用
+      </div>
+      <h2 style="font-size:1.55rem;font-weight:800;color:#fff;margin-bottom:0.4rem;">
+        進階補充：當水源遭受污染、藻華臭味或高硬度時——「高級淨水處理程序」
+      </h2>
+      <p style="color:#94a3b8;font-size:0.94rem;">
+        傳統「混凝 → 沉澱 → 快濾 → 加氯」主要針對泥沙濁度與細菌；若原水含有除不掉的土霉味（Geosmin / 2-MIB）、微量有機物或鈣鎂水垢，會在 <strong>Step 06 快濾池</strong> 之後串聯以下三個高科技單元：
+      </p>
+      <div class="adv-grid" id="advUnitsGrid"></div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       EXTRA SECTION 2: LAST-MILE USER PIPE JOURNEY (出廠後到水龍頭)
+       ========================================================= -->
+  <section class="extra-section">
+    <div class="section-card">
+      <div style="display:inline-block;font-size:0.75rem;font-weight:700;color:#38bdf8;background:rgba(56,189,248,0.12);padding:0.25rem 0.7rem;border-radius:6px;margin-bottom:0.6rem;">
+        DISTRIBUTION & PREMISES PLUMBING · 水質最容易劣化的最後一哩路
+      </div>
+      <h2 style="font-size:1.55rem;font-weight:800;color:#fff;margin-bottom:0.4rem;">
+        離開淨水場之後：從市政配水幹管到你家頂樓水塔與水龍頭
+      </h2>
+      <p style="color:#94a3b8;font-size:0.94rem;">
+        自來水出廠時濁度僅 0.03 NTU，但進入建築物「地下受水池」與「頂樓水塔」後，自由餘氯會在 24~48 小時內揮發。以下是水從水廠出門到流入水杯的 5 個關鍵節點：
+      </p>
+      <div class="pipe-flow-list" id="pipeFlowList"></div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       DEEP LIGHTBOX MODAL (方案四 深度細節與工程規格燈箱)
+       ========================================================= -->
+  <div class="lightbox-backdrop" id="lightboxBackdrop" role="dialog" aria-modal="true">
+    <div class="lightbox-modal">
+      <!-- Left Photo Gallery Column -->
+      <div class="modal-photo-col">
+        <div class="modal-main-img-wrap">
+          <img id="modalMainImg" src="images/step1_main.png" alt="步驟實景大圖" />
+        </div>
+        <div class="modal-photo-Readout" id="modalPhotoCaption"></div>
+        <div class="modal-thumb-bar">
+          <button class="modal-thumb-btn active" id="modalThumbMain" type="button">
+            <img id="modalThumbMainImg" src="images/step1_main.png" alt="運轉實景縮圖" />
+            <div>
+              <div style="font-size:0.8rem;font-weight:700;">📷 日常滿水運轉實景</div>
+              <div style="font-size:0.72rem;opacity:0.75;">點擊切換主圖</div>
+            </div>
+          </button>
+          <button class="modal-thumb-btn" id="modalThumbDetail" type="button">
+            <img id="modalThumbDetailImg" src="images/step1_detail.png" alt="細部構造縮圖" />
+            <div>
+              <div style="font-size:0.8rem;font-weight:700;">🔬 排空構造 / 水質特寫</div>
+              <div style="font-size:0.72rem;opacity:0.75;">透視水下設備與反應</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Detailed Explanation Column -->
+      <div class="modal-content-col">
+        <div class="modal-top-bar">
+          <div>
+            <span class="step-num-badge" id="modalStepBadge">STEP 01</span>
+            <h2 style="font-size:1.5rem;font-weight:800;color:#fff;margin-top:0.4rem;" id="modalTitle">步驟標題</h2>
+            <div style="font-size:0.8rem;color:#64748b;font-family:monospace;" id="modalEngTitle">English Title</div>
+          </div>
+          <button class="modal-close-btn" id="modalCloseBtn" type="button" title="關閉視窗 (Esc)">✕</button>
+        </div>
+
+        <!-- 3-Level Knowledge Tabs -->
+        <div class="modal-tabs">
+          <button class="modal-tab-btn active" data-tab="modalLaymanPane" type="button">📖 白話原理與解說</button>
+          <button class="modal-tab-btn" data-tab="modalSpecsPane" type="button">⚙️ 工程設計參數與法規</button>
+          <button class="modal-tab-btn" data-tab="modalFieldPane" type="button">👷 現場工程師實務筆記</button>
+        </div>
+
+        <!-- Tab 1: Layman -->
+        <div class="tab-pane active" id="modalLaymanPane"></div>
+
+        <!-- Tab 2: Engineering Specs -->
+        <div class="tab-pane" id="modalSpecsPane"></div>
+
+        <!-- Tab 3: Field Notes -->
+        <div class="tab-pane" id="modalFieldPane"></div>
+
+        <!-- Modal Step Footer Navigation -->
+        <div class="modal-nav-footer">
+          <button class="modal-step-nav-btn" id="modalPrevBtn" type="button">← 上一個程序</button>
+          <span style="font-size:0.78rem;color:#64748b;align-self:center;">支援鍵盤 ← → 切換程序 / Esc 關閉</span>
+          <button class="modal-step-nav-btn" id="modalNextBtn" type="button">下一個程序 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
